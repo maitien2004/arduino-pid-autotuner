@@ -18,7 +18,7 @@ void PIDAutotuner::setLoopInterval(long interval) {
 }
 
 // Set output range
-void PIDAutotuner::setOutputRange(float min, float max) {ZNMode
+void PIDAutotuner::setOutputRange(float min, float max) {
   minOutput = min;
   maxOutput = max;
 }
@@ -38,13 +38,13 @@ void PIDAutotuner::startTuningLoop() {
   i = 0; // Cycle counter
   output = true; // Current output state
   outputValue = maxOutput;
-  t1 = t2 = micros(); // Times used for calculating period
+  t1 = t2 = millis(); // Times used for calculating period
   microseconds = tHigh = tLow = 0; // More time variables
   max = -1000000; // Max input
   min = 1000000; // Min input
   pAverage = iAverage = dAverage = 0;
 
-  sei();
+  // sei();
 }
 
 // Run one cycle of the loop
@@ -68,7 +68,7 @@ float PIDAutotuner::tunePID(float input) {
 
   // Calculate time delta
   long prevMicroseconds = microseconds;
-  microseconds = micros();
+  microseconds = millis();
   float deltaT = microseconds - prevMicroseconds;
 
   // Calculate max and min
@@ -80,7 +80,7 @@ float PIDAutotuner::tunePID(float input) {
     // Turn output off, record current time as t1, calculate tHigh, and reset maximum
     output = false;
     outputValue = minOutput;
-    t1 = micros();
+    t1 = millis();
     tHigh = t1 - t2;
     max = targetInputValue;
   }
@@ -90,7 +90,7 @@ float PIDAutotuner::tunePID(float input) {
     // Turn output on, record current time as t2, calculate tLow
     output = true;
     outputValue = maxOutput;
-    t2 = micros();
+    t2 = millis();
     tLow = t2 - t1;
 
     // Calculate Ku (ultimate gain)
@@ -166,9 +166,15 @@ float PIDAutotuner::tunePID(float input) {
 }
 
 // Get PID constants after tuning
-float PIDAutotuner::getKp() { return kp; };
-float PIDAutotuner::getKi() { return ki; };
-float PIDAutotuner::getKd() { return kd; };
+float PIDAutotuner::getKp() {
+  return kp;
+};
+float PIDAutotuner::getKi() {
+  return ki;
+};
+float PIDAutotuner::getKd() {
+  return kd;
+};
 
 // Is the tuning loop finished?
 bool PIDAutotuner::isFinished() {
